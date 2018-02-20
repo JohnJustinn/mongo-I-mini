@@ -6,12 +6,31 @@ const mongoose = require('mongoose')
 
 const server = express();
 
+const Bear = require('./BearModel.js');
+
 server.use(helmet()); 
 server.use(cors());   
 server.use(bodyParser.json());
 
 server.get('/', function(req, res) {
   res.status(200).json({ status: 'API Running' });
+});
+
+server.post('/api/bears', function(req, res) {
+    const bearInformation = req.body;
+    const bear = new Bear(bearInformation);
+    bear
+        .save()
+        .then(savedBear => {
+          res.status(201).json(savedBear);
+        })
+        .catch(error => {
+          res
+          .status(500)
+          .json({
+            error: 'There was an error while saving the Bear to the Database.'
+          })
+        });
 });
 
 mongoose
