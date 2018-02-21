@@ -16,6 +16,56 @@ server.get('/', function(req, res) {
   res.status(200).json({ status: 'API Running' });
 });
 
+server.get('/api/bears', function(req, res) {
+    Bear.find()
+      .then(bears => {
+        res
+        .status(200)
+        .json(bears);
+      })
+      .catch(error => {
+        res
+        .status(500)
+        .json({ error: 'The Bears are Missing!'});
+      });
+});
+
+server.get('/api/bears/:id', (req, res) => {
+  const { id } = req.params;
+  Bear.findById(id)
+   .then(bear => {
+      res
+      .status(200)
+      .json(bear);
+    })
+    .catch(error => {
+      res
+      .status(500)
+      .json({ error: `Oh No, we can't find the Bear!!!`});
+    });
+});
+
+server.delete("/api/bears/:id", (req, res) => {
+  const { id } = req.params;
+  Bear.findByIdAndRemove(id)
+  .then(bear => {
+    if (bear) {
+      res
+      .status(200)
+      .json({ message: 'The sweet bear is gone forever' });
+    } else {
+      res
+      .status(404)
+      .json({ error: 'If a bear is deleted in the forest without an id, does anyone notice it is gone?' })
+    }
+  })
+  .catch(error => {
+    res
+    .status(500)
+    .json({ error: 'The bear cannot just be forgotten' });
+  })
+});
+
 server.post('/api/bears', function(req, res) {
     const bearInformation = req.body;
     const bear = new Bear(bearInformation);
